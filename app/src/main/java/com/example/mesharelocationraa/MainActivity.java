@@ -15,22 +15,25 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
 
 public class MainActivity extends AppCompatActivity {
     LocationManager lm;
+    AlphaAnimation animesh;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1);
          lm= (LocationManager) getSystemService(LOCATION_SERVICE);
-        startService(new Intent(this,TrackerService.class));
 
+animesh=new AlphaAnimation(1.0f,0.5f);
     }
 
 
 
     public void start(View view) {
+        view.startAnimation(animesh);
         if(!lm.isProviderEnabled(LocationManager.GPS_PROVIDER))
         {
             createalertbuilder();
@@ -45,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
                 {
 startService(new Intent(this,TrackerService.class));
 
+
             }
 
 
@@ -55,6 +59,7 @@ startService(new Intent(this,TrackerService.class));
     }
 
     public void stop(View view) {
+        view.startAnimation(animesh);
         stopService(new Intent(MainActivity.this,TrackerService.class));
     }
     public void createalertbuilder()

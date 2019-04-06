@@ -1,10 +1,12 @@
 package com.example.mesharelocationraa;
 
 import android.Manifest;
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -40,7 +42,52 @@ LocationCallback callback;
     public void onCreate() {
         Toast.makeText(this,"Started",Toast.LENGTH_SHORT).show();
         getlocation();
+
         super.onCreate();
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
+                notificationIntent, 0);
+
+        Notification notification = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle("Neats")
+                .setContentText("Sending location")
+                .setContentIntent(pendingIntent).build();
+
+        startForeground(1337, notification);
+     /*   NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+
+        int notificationId = 1;
+        String channelId = "channel-01";
+        String channelName = "Channel Name";
+        int importance = NotificationManager.IMPORTANCE_HIGH;
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel mChannel = new NotificationChannel(
+                    channelId, channelName, importance);
+            notificationManager.createNotificationChannel(mChannel);
+        }
+
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), channelId)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle("NEats")
+                .setContentText("App is now running");
+
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
+        stackBuilder.addNextIntent(intent);
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(
+                0,
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
+        mBuilder.setContentIntent(resultPendingIntent);
+
+        notificationManager.notify(notificationId, mBuilder.build());*/
+        return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
@@ -75,18 +122,20 @@ callback=new LocationCallback() {
     }
    public void sendtofirebase()
     {mref=FirebaseDatabase.getInstance().getReferenceFromUrl("https://applico-9faa6.firebaseio.com/");
-        Toast.makeText(this,"im not running now",Toast.LENGTH_SHORT).show();
+       // Toast.makeText(this,"im running now",Toast.LENGTH_SHORT).show();
         DatabaseReference latti,longi;
 latti=mref.child("9601608920(Lattitude)");
         latti.setValue(String.valueOf(lat));
+        //Toast.makeText(this,"im running now2",Toast.LENGTH_SHORT).show();
         longi=mref.child("9601608920(Longitude)");
         longi.setValue(String.valueOf(lon));
+        //Toast.makeText(this,"im running now3",Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onDestroy() {
         Toast.makeText(this,"Stopped",Toast.LENGTH_SHORT).show();
-       // client.removeLocationUpdates(callback);
+       client.removeLocationUpdates(callback);
 
 
 
